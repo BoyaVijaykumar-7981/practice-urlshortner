@@ -2,10 +2,17 @@ const mangoose = require('mongoose');
 
 const connectdb = async()=>{
     try{
-        await mangoose.connect(process.env.MONGO_URI);
+        const mongoUri = process.env.MONGO_URI;
+
+        if (typeof mongoUri !== 'string' || mongoUri.trim() === '') {
+            throw new Error('MONGO_URI is missing or invalid in environment variables.');
+        }
+
+        await mangoose.connect(mongoUri);
         console.log('MongoDB connected')
     }catch(err){
         console.log(err.message);
+        process.exit(1);
     }
 }
 

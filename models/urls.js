@@ -10,9 +10,11 @@ const urls = new mongoose.Schema({
         type : String,
         required : true
     },
-    vistedAnalysis:{
+    visitedAnalysis:{
         timestamp : []
     }
+},{
+    timestamps: true
 })
 
 module.exports= mongoose.model("URL",urls);
