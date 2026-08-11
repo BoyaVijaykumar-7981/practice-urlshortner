@@ -11,8 +11,11 @@ const handleUrlInput = async(req,res)=>{
       url:url,
       visitedAnalysis : []
    })
-
-   return res.json({id:shortID});
+    
+   return res.render('staticHome',{
+      id:shortID
+   })
+   //return res.json({id:shortID});
 }
 
 const handleRedirectUrl = async(req,res)=>{
@@ -40,5 +43,6 @@ const handleVistedAnalysis=async(req,res)=>{
       updatedAt: data.updatedAt
    });
 }
+
 
 module.exports = {handleUrlInput,handleRedirectUrl,handleVistedAnalysis}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: aquamarine;
+        }
+        H1{
+            text-align: center;
+        }
+        .container{
+            text-align: center;
+        }
+        form{
+            border-color: azure;
+        }
+    </style>
+</head>
+<body>
+    <H1>URL Shortner</H1>
+    <div class="container">
+        <form method="POST" action="/url">
+            <label>Enter url : </label>
+            <input type="text" name="url" placeholder="https//example.com">
+            <button type="submit">click</button>
+        </form>
+    </div>
+    <div class="container">
+        <% if(locals.id) { %>
+           <p>URL generated : http://localhost:<%= process.env.port %>/url/<%= id %> </p>
+        <% } %>
+    </div>
+
+</body>
+</html>
