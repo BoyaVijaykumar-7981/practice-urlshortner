@@ -3,35 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>URL Shortener</title>
     <style>
-        body{
-            background-color: aquamarine;
+        :root {
+            --bg-top: #d8f3dc;
+            --bg-bottom: #95d5b2;
+            --card-bg: #ffffff;
+            --text: #1b4332;
+            --accent: #2d6a4f;
+            --accent-hover: #1b4332;
+            --border: #74c69d;
         }
-        H1{
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+            padding: 24px 14px;
+        }
+
+        h1 {
             text-align: center;
+            margin: 0 0 16px;
+            letter-spacing: 0.6px;
         }
-        .container{
+
+        .container {
+            width: min(980px, 100%);
+            margin: 0 auto 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 8px 22px rgba(27, 67, 50, 0.12);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: min(560px, 100%);
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .generated-link {
             text-align: center;
+            margin: 4px 0;
         }
-        form{
-            border-color: azure;
+
+        .table-wrap {
+            overflow-x: auto;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            border: 2px solid var(--border);
+            background: #fff;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border);
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        thead th {
+            background-color: #b7e4c7;
+            color: #083d2b;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f1fff7;
+        }
+
+        .empty-row {
+            text-align: center;
+            font-style: italic;
+            color: #3f5f53;
+        }
+
+        .small-text {
+            font-size: 13px;
+            color: #355748;
+        }
+
+        .short-link {
+            color: #1d5e44;
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px dashed #1d5e44;
+        }
+
+        .short-link:hover {
+            color: #0b3424;
+            border-bottom-style: solid;
+        }
+
     </style>
 </head>
 <body>
-    <H1>URL Shortner</H1>
+    <h1>URL Shortner</h1>
     <div class="container">
         <form method="POST" action="/url">
-            <label>Enter url : </label>
-            <input type="text" name="url" placeholder="https//example.com">
-            <button type="submit">click</button>
+            <div class="form-row">
+                <label for="urlInput">Enter URL:</label>
+                <input id="urlInput" type="text" name="url" placeholder="https://example.com" required>
+                <button type="submit">Shorten</button>
+            </div>
         </form>
     </div>
+
     <div class="container">
         <% if(locals.id) { %>
-           <p>URL generated : http://localhost:<%= process.env.port %>/url/<%= id %> </p>
+           <p class="generated-link">URL generated:
+               <a class="short-link" href="/url/<%= id %>" target="_blank" rel="noopener noreferrer">http://localhost:<%= process.env.port %>/url/<%= id %></a>
+           </p>
         <% } %>
+        <% if(locals.data) { %>
+           <p class="generated-link small-text">Analysis opened for short ID: <strong><%= data.shortId %></strong></p>
+        <% } %>
+    </div>
+
+    <div class="container">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Original URL</th>
+                        <th>Short ID</th>
+                        <th>Visits</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (locals.urls && urls.length) { %>
+                        <% urls.forEach(function(item) { %>
+                            <tr>
+                                <td><%= item.url %></td>
+                                <td>
+                                    <a class="short-link" href="/url/<%= item.shortId %>" target="_blank" rel="noopener noreferrer"><%= item.shortId %></a>
+                                </td>
+                                <td><%= item.visitedAnalysis && Array.isArray(item.visitedAnalysis.timestamp) ? item.visitedAnalysis.timestamp.length : 0 %></td>
+                                <td><%= item.createdAt ? item.createdAt.toISOString() : '-' %></td>
+                                <td><%= item.updatedAt ? item.updatedAt.toISOString() : '-' %></td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td class="empty-row" colspan="5">No URL entries yet. Add one above to populate the table.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </body>
